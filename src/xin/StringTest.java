@@ -1,3 +1,5 @@
+package xin;
+
 /**
  * Created by xin on 2016/5/13.
  */

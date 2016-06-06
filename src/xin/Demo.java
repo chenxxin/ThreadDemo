@@ -1,3 +1,5 @@
+package xin;
+
 import stack_queue.QueueToStackTest;
 
 import java.util.LinkedList;
