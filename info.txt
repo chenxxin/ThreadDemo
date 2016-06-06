@@ -1,0 +1,5 @@
+41050014|xinxin|female|henan
+41050001|zhangsan|male|hebei
+41050023|lisi|male|beijing
+41050045|wangwu|male|shanghai
+41050021|huohuo|male|henan
