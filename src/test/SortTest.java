@@ -91,14 +91,14 @@ public class SortTest {
 
     //快速排序
     public static void quickSort(int[] a){
-        quckRecursion(a, 0, a.length-1);
+        quickSort(a, 0, a.length-1);
     }
 
     //快速排序--对数组a中下标从s到t区间内的元素进行递归排序
-    public static void quckRecursion(int[] a, int s, int t){
+    public static void quickSort(int[] a, int s, int t){
         int j = partition(a, s, t);
-        if (s<j-1){ quckRecursion(a, s, j-1);}
-        if (j+1<t){ quckRecursion(a, j+1, t);}
+        if (s<j-1){ quickSort(a, s, j-1);}
+        if (j+1<t){ quickSort(a, j+1, t);}
     }
 
     //快速排序--对数组a中下标从s到t区间内的元素进行一次划分，返回中间位置
