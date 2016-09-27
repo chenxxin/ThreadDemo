@@ -1,0 +1,72 @@
+
+long kaishi = System.currentTimeMillis();//获取开始时间
+
+long jieshu = System.currentTimeMillis();//获取结束时间
+System.out.println("程序运行时间： "+(jieshu-kaishi)+"ms");
+
+-------------------------------------------------------------------------------------------------------
+org.apache.commons.lang3.StringUtils包
+
+	//判断某字符串是否 为空 或长度为0
+	StringUtils.isEmpty("");     //null或""，（" "为false）
+	StringUtils.isNotEmpty(" ");
+
+	//判断某字符串是否 为空 或长度为0 或由空白符构成
+	StringUtils.isBlank("\t");    //null、""、" "、"\t"、"\n"、"\r"、"\f"，（"\b"为false）
+	StringUtils.isNotBlank("str");//---------常用-----------
+
+	//去掉字符串两端的控制符（空格、\t、\n、\r、\f、\b），如果输入为null则返回null
+	StringUtils.trim(" hello\t");
+	StringUtils.trimToNull(str);//如果变为null或""，则返回null
+	StringUtils.trimToEmpty(str);//如果变为null或""，则返回""
+
+	//去掉字符串两端的空白符（\b除外），如果输入为null则返回null
+	StringUtils.strip(str);
+	StringUtils.stripToNull(str);
+	StringUtils.stripToEmpty(str);
+
+	StringUtils.equals(null,null);//两个都为null，或为"" ，也返回true
+
+	StringUtils.split("hello;world",';');
+	StringUtils.split("hello;world",";");
+	
+	StringUtils.isNumeric(str); //判断字符串是否为数字
+	
+---------------------------------------------------------------------------------------------------------	
+lombok	
+
+@Data  ：注解在类上；提供类所有属性的 getting 和 setting 方法、equals、hashCode、toString 方法
+@Setter：注解在属性上；为属性提供 setting 方法
+@Getter：注解在属性上；为属性提供 getting 方法
+@Log4j ：注解在类上；为类提供一个 属性名为log 的 log4j 日志对象
+@Slf4j
+@NoArgsConstructor： 注解在类上；为类提供一个无参的构造方法
+@AllArgsConstructor：注解在类上；为类提供一个全参的构造方法	
+	
+---------------------------------------------------------------------------------------------------------	
+java.util.concurrent包
+ScheduledExecutorService定时周期执行指定的任务
+
+---------------------------------------------------------------------------------------------------------	
+org.joda.time.DateTime包
+DateTime.now()  返回当前时间
+DateTime.now().minusDays(7)  返回当前时间的7天前
+getMillis()方法，获取时间对应的毫秒数
+long timestamp = DateTime.now().minusDays(31).getMillis(); 31天前对应的毫秒数
+
+---------------------------------------------------------------------------------------------------------
+Spring Data JPA
+
+Sort sort = new Sort(Direction.ASC, "createTime");
+Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
+//pageIndex：第几页，从0开始；pageSize：每页显示几个
+
+前两句也可直接写为：Pageable pageable = new PageRequest(pageIndex, pageSize, Direction.ASC, "createTime");
+
+Page<CdnLog> page = cdnLogService.findByDomainId(domainId,pageable);
+
+接口（继承）
+Repository
+CrudRepository
+PagingAndSortingRepository
+JpaRepository

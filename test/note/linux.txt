@@ -1,0 +1,60 @@
+
+1. cat命令  可以一次显示整个文件，如果文件比较大，使用不方便；
+	cat -n filename   可显示行号
+2. more命令 可以让屏幕在显示满一屏幕时暂停，此时可按空格健继续显示下一个画面，或按Q键停止显示。
+3. less命令 也可以分页显示文件，和more命令的区别就在于它支持上下键卷动屏幕，当结束时只需在：后输入Q即可。
+	less -N filename    可显示行号
+
+在filename文件中搜索"word"关键字
+cat filename | grep "word" | more
+cat filename | grep "word" | less 
+
+可以先通过 cat filename | grep "word" 查找是否存在该关键字，
+然后通过 cat filename | grep "word" | less 分页查看
+
+cat cdn-open-api_c2/log/cdn-api.2016-08-04-* | grep "mail"
+
+----------------------------------------------------------------------------------------------------------
+压测，json.txt 为 post的参数
+ab -n 1000 -c 1000 -p json.txt -T 'application/json' 10.4.2.37:8988/2016-08-11/bandwidth  
+
+----------------------------------------------------------------------------------------------------------
+
+SecureCRT
+连接 relay.ksyun.com
+ssh 10.4.2.37     连接到该服务器
+sudo -i           切换到root用户
+cd /data/cdn-api  进入cdn-api项目
+
+cat filename | head -n 100 >> test.txt   将文件导出到指定目录
+sz test.txt   将文件下载到本地的Downloads目录  只适用于SecureCRT
+
+rz -be        弹框，将指定文件上传到服务器     只适用于SecureCRT  
+
+----------------------------------------------------------------------------------------------------------
+curl
+
+发送post
+curl -X POST -H "Content-Type:application/json" http://10.4.2.37:8988/2016-07-15/domain -d '{"access_token":"ksyun/111111"}'
+
+
+
+curl -X POST -H "Content-Type:application/json,Host:domain" http://open-api.cdn.ksyun.com/2016-07-15/domain -d '{"access_token":"ksyun/111111"}'
+
+
+
+curl -X POST -H "Content-Type:application/json,Host:open-api.cdn.ksyun.com" http://120.92.234.60/2016-07-15/domain -d '{"access_token":"ksyun/111111"}'
+
+
+curl -X POST -H "Content-Type:application/json" http://inner-api.cdn.ksyun.com/cdnLog -d '[{"id":null,"domainId":172,"region":"HANGZHOU","bucket":"a","name":"b","url":"url","logTime":1459931276722,"type":"edge","size":123}]'
+
+
+
+curl -X POST -H "Content-Type:application/json,Host:open-api.cdn.ksyun.com" http://120.92.234.60/2016-07-15/domain -d '{"access_token":"yy/111111"}'
+
+curl -X POST -H "Content-Type:application/json" -H "Host:120.92.234.60" 'http://open-api.cdn.ksyun.com/2016-07-18/servitization' -d '{"domain":"qwee","access_token":"yy/31e5116e7b6a47eca4eb9abe60b694cd"}'
+
+
+
+
+

@@ -1,0 +1,79 @@
+Java 垃圾收集机制
+对象引用
+Java 中的垃圾回收一般是在 Java 堆中进行，因为堆中几乎存放了 Java 中所有的对象实例。Java 将引用分为强引用、软引用、弱引用、虚引用四种，引用强度依次减弱。
+	强引用 ：如“Object obj = new Object（）”，这类引用是 Java 程序中最普遍的。只要强引用还存在，垃圾收集器就永远不会回收掉被引用的对象。
+	软引用（SoftReference）：在系统内存不够用时，软引用对象将被回收；可单独使用。
+	弱引用（WeakReference）：当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象；可单独使用。
+	虚引用（PhantomReference）：主要用于跟踪对象对被垃圾回收的状态；不能单独使用。
+后面三个引用类都包含了一个get()方法，用于获取被它们所引用的对象。
+	
+引用队列（ReferenceQueue）: 用于保存被回收后对象的引用	
+当被引用的对象 被回收后，对应的引用将被添加到关联的引用队列中
+	
+String str = new String("疯狂java讲义");
+ReferenceQueue rq = new ReferenceQueue(); // 创建一个引用队列
+
+
+软引用示例：
+SoftReference sr = new SoftReference(str);
+str = null;
+System.out.println(sr.get()); // 疯狂java讲义
+System.gc();
+System.runFinalization();
+System.out.println(sr.get()); // 疯狂java讲义
+
+
+SoftReference sr = new SoftReference(str,rq);
+str = null;
+System.out.println(sr.get());      // 疯狂java讲义
+System.gc();
+System.runFinalization();
+System.out.println(sr.get());      // 疯狂java讲义
+System.out.println(rq.poll());     // null
+System.out.println(rq.poll()==sr); //false
+
+	
+弱引用示例：
+WeakReference wr = new WeakReference(str);
+str = null;
+System.out.println(wr.get()); // 疯狂java讲义
+System.gc();
+System.runFinalization();
+System.out.println(wr.get());  //null
+
+WeakReference wr = new WeakReference(str,rq);
+str = null;
+System.out.println(wr.get());      // 疯狂java讲义
+System.gc();
+System.runFinalization();
+System.out.println(wr.get());      //null
+System.out.println(rq.poll()==wr); //true
+
+虚引用示例：
+PhantomReference pr = new PhantomReference(str,rq);
+System.out.println(rq.poll()==pr); //false
+str = null;
+System.out.println(pr.get());      //null  系统无法通过虚引用获取被引用的对象
+System.gc();
+System.runFinalization();
+System.out.println(rq.poll()==pr); //true
+
+垃圾对象的判定
+Java 堆中存放着几乎所有的对象实例，垃圾收集器对堆中的对象进行回收前，要先确定这些对象是否还有用，判定对象是否为垃圾对象有如下算法：
+引用计数算法
+	给对象添加一个引用计数器，每当有一个地方引用它时，计数器值就加 1，当引用失效时，计数器值就减1，任何时刻计数器都为 0 的对象就是不可能再被使用的。
+	引用计数算法的实现简单，判定效率也很高，但Java 语言并没有选择这种算法，主要原因是它很难解决对象之间的相互循环引用问题。
+根搜索算法
+	Java 和 C# 中都是采用根搜索算法来判定对象是否存活的。这种算法的基本思路是通过一系列名为“GC Roots”的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连时，就证明此对象是不可用的。在 Java 语言里，可作为 GC Roots 的对象包括下面几种：
+		虚拟机栈（栈帧中的本地变量表）中引用的对象。
+		方法区中的类静态属性引用的对象。
+		方法区中的常量引用的对象。
+		本地方法栈中 JNI（Native 方法）的引用对象。
+	在根搜索算法中，有一个两次标记的过程
+	
+	
+垃圾收集算法	
+	标记—清除算法 Mark-Sweep
+	复制算法 Copying              （新生代）
+	标记—整理算法 Mark-Compact    （老年代）
+	分代收集算法 Generational Collection

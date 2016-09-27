@@ -1,0 +1,106 @@
+
+mv a b  把a重命名为b
+mv lib/a bak/a   把lib下的a 移动到 bak目录下
+
+-------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------
+intellij配置jvm 代理
+-Dhttp.proxyHost=10.146.17.40 -Dhttp.proxyPort=18080
+
+---------------------------------------------------------------------------------------------
+计算文件的md5值
+windows下
+certutil -hashfile yourfilename.txt MD5
+linux下：
+md5sum yourfilename.txt
+
+---------------------------------------------------------------------------------------------
+上线之前在master打tag
+git tag -a v1.1.2.0 -m "上线YY的流量带宽请求数"
+git push --tags
+
+----------------------------------------------------------------------------------------------
+git打包：
+mvn clean package dependency:copy-dependencies -Dmaven.test.skip=true
+mvn clean package -Dmaven.test.skip=true
+保存在target目录下
+
+mvn install -Dmaven.test.skip=true
+
+mvn clean install -e -U -Dmaven.test.skip=true 强制clean
+
+查看项目jar包
+mvn dependency:copy-dependencies
+
+-----------------------------------------------------------------------------------------
+当用mvn install 打出jar 包后，如果需要把该jar原封不动的deploy到mvn仓库中，可以执行如下命令：
+mvn deploy:deploy-file -Durl=url  -DrepositoryId=repositoryId -Dfile=file -DpomFile=pom.xml -Dversion=1.0
+
+-Durl                   是指要deploy到仓库的路径
+-DrepositoryId    jar 包的repositoryid
+-Dfile                  jar包的具体路径
+-DpomFile          jar对应的pom路径
+-Dversion           jar的版本
+
+mvn deploy:deploy-file -Durl=http://scm.ks3.ksyun.com:8081/nexus/content/groups/public  -DrepositoryId=repositoryId -Dfile=file -DpomFile=pom.xml -Dversion=1.0
+
+mvn deploy:deploy-file -DgroupId=com.ksyun.cdn -DartifactId=cdn-core -Dversion=0.0.2 -Dpackaging=jar -Dfile=D:\Program Files (x86)\maven\repository\com\ksyun\cdn\cdn-core\0.0.2\cdn-core-0.0.2.jar -Durl=http://scm.ks3.ksyun.com:8081/nexus/content/groups/public/ -DpomFile=pom.xml -Dversion=0.0.2
+
+-----------------------------------------------------------------------------------------
+github 上传本地项目
+
+在github新建repository
+进入项目所在目录
+git init
+git remote add origin git@github.com:yourName/yourRepo.git
+创建.gitignore文件
+git status
+git add .
+git commit -m 'first commit'
+git push origin master
+
+
+-----------------------------------------------------------------------------------------
+git导出
+进入intellijcode目录
+git clone 仓库地址
+
+git pull  之后，可以 git branch -r 看到所有远程分支
+
+git branch     查看所有本地分支
+git branch -a  查看所有分支（本地和远程）
+git branch -r  查看所有远程分支
+
+git checkout origin dev-aim
+git checkout dev-aim   //应该用这种
+
+git remote -v
+git remote remove origin
+git remote -v
+git remote add origin git@git.op.ksyun.com:cdn-center/cdn-api.git
+
+git pull origin dev-aim
+git push origin dev-aim
+
+git status
+git add .
+git commit -m '注释'
+git push origin dev-aim
+
+-------------------------------------------------------
+git  删除未跟踪文件
+
+git clean -f   # 删除 untracked files
+git clean -fd  # 删除未跟踪文件和目录
+git clean -xfd # 连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）
+ 
+# 在用上述 git clean 前，建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删
+git clean -nxfd
+git clean -nf
+git clean -nfd
+----------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------

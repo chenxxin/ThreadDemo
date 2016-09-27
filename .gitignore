@@ -1,0 +1,18 @@
+*.xml
+*.iml
+.*
+!.gitignore
+*.log
+target/
+src/main/java/xin/
+logdir_IS_UNDEFINED/
+ 
+# idea ignore  
+.idea/  
+*.ipr  
+*.iml  
+*.iws
+
+*.jar
+
+out/

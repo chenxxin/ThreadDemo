@@ -1,0 +1,15 @@
+1. HashMap的实现不是同步的，即不是线程安全的；
+	HashMap通过 拉链法（链表法）解决哈希冲突；
+	HashMap中的key-value都是存储在Entry数组中的。
+	HashMap允许将null作为一个entry的key或者value，而Hashtable不允许
+	HashMap通过containsKey() containsValue() 判断对象是否存在
+	而Hashtable 通过 contains()方法判断对象是否存在
+	
+	Hashtable 线程安全
+	
+2. Object类中的wait()方法，必须进行try/catch，或是抛出InterruptedException
+	wait()和notify()必须采用当前锁调用，即synchronized中的对象，否则会抛出IllegalMonitorStateException
+	
+3. javax.servlet.Servlet接口 中定义了service()、doPost()、doGet()
+	doPost()/doGet() 在javax.servlet.http.HttpServlet中实现
+	service() 在javax.servlet.GenericServlet 中实现

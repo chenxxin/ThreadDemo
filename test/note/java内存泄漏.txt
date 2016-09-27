@@ -1,0 +1,108 @@
+
+java内存泄漏：
+java中的不可达对象（不再被引用），会由GC负责回收
+   而可达对象又分为两种：无用对象：内存泄漏
+						 有用对象：正常使用
+
+java中的内存泄漏的情况：
+1. 长生命周期的对象持有短生命周期对象的引用， 很可能发生内存泄漏
+下面的情形中，对象A引用了对象B，A的生命周期（t4-t1）比B的（t3-t2）要长得多，当对象B在应用逻辑中不再被使用以后，A仍然持有着B的引用，不会被DC回收，造成内存泄漏。
+
+
+public class Simple {
+    Object object;
+    public void method1(){
+        object = new Object();
+        //...其他代码
+    }
+}
+这里的object实例，我们希望它只作用于method1()方法中，且其他地方不会再用到它，
+但是，当method1()方法执行完成后，object对象所分配的内存不会马上被认为是可以被释放的对象，
+只有在Simple类创建的对象被释放后才会被释放，严格的说，这就是一种内存泄露。
+解决方法就是将object作为method1()方法中的局部变量。
+或者在 method1()方法体的最后添加 object=null
+
+
+2.如果一个外部类的实例对象的方法返回了一个内部类的实例对象，这个内部类对象被长期引用了，即使那个外部类实例对象不再被使用，但由于内部类持久外部类的实例对象，这个外部类对象将不会被垃圾回收，这也会造成内存泄露。
+ 
+3.当一个对象被存储进HashSet集合中以后，就不能修改这个对象中的那些参与计算哈希值的字段了，否则，对象修改后的哈希值与最初存储进HashSet集合中时的哈希值就不同了，在这种情况下，即使在contains方法使用该对象的当前引用作为的参数去HashSet集合中检索对象，也将返回找不到对象的结果，这也会导致无法从HashSet集合中单独删除当前对象，造成内存泄露。
+
+
+容易引起内存泄漏的几大原因:
+1. 集合类的使用（尤其是静态集合类），（HashMap，ArrayList等）
+2. 监听器。  当注册的监听器不再使用以后，如果没有被注销，很可能发生内存泄漏
+3. 物理连接。比如数据库连接和网络连接和io连接等，，除非其显式的关闭了连接，否则是不会自动被GC 回收的
+4. 内部类和外部模块等的引用。 内部类的引用是比较容易遗忘的一种，而且一旦没释放可能导致一系列的后继类对象没有释放。
+5. 单例设计模式。
+6. jdk6中的String的substring()方法有可能导致内存泄漏
+
+
+
+内存泄漏示例1：
+void method(){
+	Vector vector = new Vector();
+	for (int i = 1; i<100; i++)
+	{
+		Object object = new Object();
+		vector.add(object);
+		object = null; //虽然object引用被释放，但Vector仍然引用该对象，属于可达对象，无用，但GC也无法回收。
+	}
+	//...对vector的操作
+	
+	//...与vector无关的其他操作
+}
+
+这里内存泄露指的是在对vector操作完成之后，执行下面与vector无关的代码时，如果发生了GC操作，这一系列的object是没法被回收的，
+而此处的内存泄露可能是短暂的，因为在整个method()方法执行完成后，那些对象还是可以被回收。
+最简单的方法就是：将Vector对象置为null：vector=null
+
+内存泄漏示例2：
+Set<User> set = new HashSet<>(); // []
+User user = new User();
+set.add(user);            // set = [User(id=null, name=null, age=0)]
+user.setName("zhangsan"); // set = [User(id=null, name=zhangsan, age=0)]
+boolean flag = set.remove(user); // false 由于user对象的hashCode值已改变，无法删除对象
+user=null;                // set = [User(id=null, name=zhangsan, age=0)]
+
+此时set仍然引用该user对象，不会被GC回收
+
+ps：就Set而言，remove()方法也是通过equals()方法来删除匹配的元素的，
+但是切记不要在修改这个对象后使用remove(Object o)，这也可能会发生内存泄露。
+
+内存泄漏示例3：
+模拟java.lang.OutOfMemoryError异常：
+public class Test {
+    public static void main(String s[]){
+        Set<MyObject> objects = new LinkedHashSet<MyObject>();
+        objects.add(new MyObject());
+        objects.add(new MyObject());
+        objects.add(new MyObject());
+        System.out.println(objects.size());
+        while(true){
+            objects.add(new MyObject());
+        }
+    }
+}
+class MyObject{
+    //设置默认数组长度为99999更快的发生OutOfMemoryError
+    List<String> list = new ArrayList<>(99999);
+}
+
+
+各种提供了close()方法的对象，比如数据库连接、网络连接和io连接等，
+除非其显式的调用了close()方法（或类似方法）将其连接关闭，否则是不会自动被GC回收的。
+其实原因依然是长生命周期对象持有短生命周期对象的引用。
+
+比如hibernate：SessionFactory就是一个长生命周期的对象，而session相对是个短生命周期的对象
+
+Session session;
+try{
+	session=sessionFactory.openSession();
+	//...其他操作
+}finally{
+	session.close();
+}
+
+单例模式导致的内存泄露
+    单例模式，很多时候我们可以把它的生命周期与整个程序的生命周期看做差不多的，所以是一个长生命周期的对象。
+	如果这个对象持有其他对象的引用，也很容易发生内存泄露。
