@@ -21,6 +21,12 @@ md5sum yourfilename.txt
 git tag -a v1.1.2.0 -m "上线YY的流量带宽请求数"
 git push --tags
 
+删除本地分支
+git tag -d v1.1.2.0
+
+删除远程分支
+git push origin :refs/tags/v1.1.2.0
+
 ----------------------------------------------------------------------------------------------
 git打包：
 mvn clean package dependency:copy-dependencies -Dmaven.test.skip=true
